@@ -91,7 +91,7 @@ server <- function(input, output, session) {
         req(input$station)
         
         ttinb <- subset(inb_data, inb_data$ds == paste(input$line, input$station, sep="."))
-        ttinb2 <- ttinb[order(ttinb$dt), ]
+        ttinb <- ttinb[order(ttinb$dt), ]
         rownames(ttinb) <- NULL
         
         ttoub <- subset(oub_data, oub_data$ds == paste(input$line, input$station, sep="."))
