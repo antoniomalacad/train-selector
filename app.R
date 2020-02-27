@@ -1,17 +1,19 @@
 library(shinydashboard)
 library(jsonlite)
 library(tidyverse)
+library(dplyr)
 library(DT)
-
-rawstationdata <- fromJSON(txt="./data/stations.json", flatten = TRUE)
-stationdata <- select(rawstationdata, railway, title.en, title.ja)
-colnames(stationdata)=c("Railway", "Name-EN", "Name-JP")
 
 rawtimedatawkd <- fromJSON(txt="./data/timetable-weekday.json", flatten = TRUE)
 timedatawkd <- select(rawtimedatawkd, t, r, d, tt)
 colnames(timedatawkd)=c("Train", "Railway", "Direction", "TimeTable")
-
 rail_lines <- split(timedatawkd,timedatawkd$Railway)
+
+rawstationdata <- fromJSON(txt="./data/stations.json", flatten = TRUE)
+rawstationdata <- subset(rawstationdata, railway %in% names(rail_lines))
+stationdata <- select(rawstationdata, railway, title.en, title.ja)
+colnames(stationdata)=c("Railway", "Name-EN", "Name-JP")
+rownames(stationdata) <- NULL
 
 header <- dashboardHeader(title = "Train Selector")
 
@@ -30,7 +32,7 @@ sidebar <- dashboardSidebar(
     selectizeInput(
       "station", 
       label = "Enter station",
-      choices = stationdata$"Name-EN",
+      choices = "",
       options = list(
         placeholder = 'Select a station',
         onInitialize = I('function() { this.setValue("");}')
@@ -134,7 +136,7 @@ server <- function(input, output, session) {
     inb_table <- split(inb_data,inb_data$ds)
     oub_table <- split(oub_data,oub_data$ds)
     
-    stations <- names(oub_table)
+    stations <- unique(c(names(inb_table), names(oub_table)))
     stations <- sapply(strsplit(stations, split='.', fixed=TRUE), function(x) (x[[3]]))
     st_names <- data.frame(stations)
    
@@ -151,6 +153,7 @@ server <- function(input, output, session) {
     
     }
   )
+
 }
 
 shinyApp(ui = ui, server = server)
