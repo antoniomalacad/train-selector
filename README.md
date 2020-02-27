@@ -7,7 +7,7 @@ It also has a dynamic reference table to see the information of a particular tra
 
 You can see it running here: https://antonio-malacad.shinyapps.io/train-selector/
 
-<img url="https://user-images.githubusercontent.com/54801345/75429734-9b5c4e00-598d-11ea-930d-848c67f1829a.png" width="400px">
+<img src="https://user-images.githubusercontent.com/54801345/75429734-9b5c4e00-598d-11ea-930d-848c67f1829a.png" width="400px">
 
 ## Set Up
 
