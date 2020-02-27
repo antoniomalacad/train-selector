@@ -21,7 +21,7 @@ sidebar <- dashboardSidebar(
     selectizeInput(
       "line", 
       label = "Choose a train line",
-      choices = stationdata$Railway,
+      choices = stationdata$Railway
       options = list(
         placeholder = 'Select a line',
         onInitialize = I('function() { this.setValue("");}')
