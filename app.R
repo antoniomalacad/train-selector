@@ -21,7 +21,7 @@ sidebar <- dashboardSidebar(
     selectizeInput(
       "line", 
       label = "Choose a train line",
-      choices = stationdata$Railway
+      choices = data.frame(names(rail_lines)),
       options = list(
         placeholder = 'Select a line',
         onInitialize = I('function() { this.setValue("");}')
@@ -113,16 +113,43 @@ server <- function(input, output, session) {
   output$selected_station <- renderText(input$station)
   
   observeEvent(input$line, {
+    req(input$line)
+    df1 <- subset(timedatawkd, timedatawkd$Railway == input$line)
+    req(df1)
+    dir <- dir <- unique(df1[, 3])
+    
+    inb <- select(subset(df1, df1$Direction == dir[1]), Train, TimeTable)
+    rownames(inb) <- NULL
+    oub <- select(subset(df1, df1$Direction == dir[2]), Train, TimeTable)
+    rownames(inb) <- NULL
+    
+    inb_list <- lapply(inb[[2]], select, dt, ds)
+    inb_data = do.call(rbind, inb_list)
+    inb_data <- na.omit(inb_data)
+    
+    oub_list <- lapply(oub[[2]], select, dt, ds)
+    oub_data = do.call(rbind, oub_list)
+    oub_data <- na.omit(oub_data)
+    
+    inb_table <- split(inb_data,inb_data$ds)
+    oub_table <- split(oub_data,oub_data$ds)
+    
+    stations <- names(oub_table)
+    stations <- sapply(strsplit(stations, split='.', fixed=TRUE), function(x) (x[[3]]))
+    st_names <- data.frame(stations)
+   
+    req(st_names)
     updateSelectizeInput(
-        session, 
-       "station",
-        choices = subset(stationdata$"Name-EN", stationdata$Railway == input$line),
-        options = list(
-         placeholder = 'Select a station',
-         onInitialize = I('function() { this.setValue("");}')
+      session, 
+      "station",
+      choices = st_names,
+      options = list(
+        placeholder = 'Select a station',
+        onInitialize = I('function() { this.setValue("");}')
         )
       )
-    }  
+    
+    }
   )
 }
 
