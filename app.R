@@ -11,7 +11,7 @@ rawtimedatawkd <- fromJSON(txt="./data/timetable-weekday.json", flatten = TRUE)
 timedatawkd <- select(rawtimedatawkd, t, r, d, tt)
 colnames(timedatawkd)=c("Train", "Railway", "Direction", "TimeTable")
 
-rail_lines <- names(split(timedatawkd,timedatawkd$Railway))
+rail_lines <- split(timedatawkd,timedatawkd$Railway)
 
 header <- dashboardHeader(title = "Train Selector")
 
